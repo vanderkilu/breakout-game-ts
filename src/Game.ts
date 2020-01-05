@@ -1,4 +1,5 @@
 import {Ball} from './entities/Ball'
+import {Paddle} from './entities/Paddle'
 
 export interface IGameOptions {
     canvasWidth: number,
@@ -9,12 +10,15 @@ export interface IGameOptions {
 export class Game {
     private ctx: CanvasRenderingContext2D = null
     public ball: Ball = null
+    public paddle: Paddle = null
     public interval: any
     
 
     constructor(public gameOptions: IGameOptions){
         this.initCanvas()
         this.initBall()
+        this.initPaddle()
+        this.initEvent()
         this.initGameLoop()
     }
 
@@ -36,6 +40,21 @@ export class Game {
         this.ball = new Ball(ballX, ballY, ballRadius, 0, 'green')
     }
 
+    private initPaddle(): void {
+        const paddleWidth = 100
+        const paddleHeight = 10
+        const paddleX = (this.gameOptions.canvasWidth-paddleWidth)/2
+        const paddleY = this.gameOptions.canvasHeight - paddleHeight
+
+        this.paddle = new Paddle(
+            paddleX, 
+            paddleY, 
+            paddleWidth, 
+            paddleHeight,
+            'green'
+        )
+    }
+
     private draw(): void {
         this.ctx.clearRect(
             0, 
@@ -46,6 +65,15 @@ export class Game {
         this.ball.draw(this.ctx)
         this.ball.updatePosition()
         this.ball.checkBoundary(this.gameOptions)
+
+        this.paddle.draw(this.ctx)
+        this.paddle.checkMovement(this.gameOptions)
+        
+    }
+
+    private initEvent(): void {
+        document.addEventListener('keydown', (e)=> this.paddle.beginMovement(e))
+        document.addEventListener('keyup', (e)=> this.paddle.stopMovement(e))
     }
 
     private initGameLoop() : void {
