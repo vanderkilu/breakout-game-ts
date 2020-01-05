@@ -1,16 +1,9 @@
-export class Hero {
-    id: number;
-    name: string;
+import {Game, IGameOptions} from './Game'
 
-    constructor(name: string) {
-        this.name = name;
-    }
-
-    myName()
-    {
-        return this.name;
-    }
-  }
-
-  let hero = new Hero('krunal');
-  console.log(hero.myName());
+window.addEventListener('load', (): void => {
+    const game: Game = new Game({
+        canvasWidth: 1024,
+        canvasHeight: 650,
+        canvasId: 'canvas'
+    } as IGameOptions)
+}, true)

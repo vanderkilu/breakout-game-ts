@@ -22,6 +22,7 @@ export class Game {
         const canvas: HTMLCanvasElement = document.getElementById(
             this.gameOptions.canvasId
         ) as HTMLCanvasElement
+       
         canvas.width = this.gameOptions.canvasWidth
         canvas.height = this.gameOptions.canvasHeight
         this.ctx = canvas.getContext('2d')
@@ -44,9 +45,10 @@ export class Game {
         )
         this.ball.draw(this.ctx)
         this.ball.updatePosition()
+        this.ball.checkBoundary(this.gameOptions)
     }
 
     private initGameLoop() : void {
-        this.interval = setInterval(this.draw, 10)
+        this.interval = setInterval(() => this.draw(), 10)
     }
 }
