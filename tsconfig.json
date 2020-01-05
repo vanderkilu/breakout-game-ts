@@ -5,9 +5,6 @@
         "esModuleInterop": true,
         "noImplicitAny": true,
         "target": "es5",
-        "outDir": "./build",
-        "allowJs": true,
-        "sourceMap": true
     },
     "include": [
         "./src/**/*"
