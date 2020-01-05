@@ -64,7 +64,7 @@ export class Game {
         )
         this.ball.draw(this.ctx)
         this.ball.updatePosition()
-        this.ball.checkBoundary(this.gameOptions)
+        this.ball.checkCollision(this.gameOptions, this.paddle)
 
         this.paddle.draw(this.ctx)
         this.paddle.checkMovement(this.gameOptions)
