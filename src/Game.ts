@@ -1,5 +1,6 @@
 import {Ball} from './entities/Ball'
 import {Paddle} from './entities/Paddle'
+import {Score} from './entities/Score'
 
 export interface IGameOptions {
     canvasWidth: number,
@@ -11,16 +12,13 @@ export class Game {
     private ctx: CanvasRenderingContext2D = null
     public ball: Ball = null
     public paddle: Paddle = null
+    public score: Score = null
     public interval: any
     private isGameOver: boolean = false
     
 
     constructor(public gameOptions: IGameOptions){
-        this.initCanvas()
-        this.initBall()
-        this.initPaddle()
-        this.initEvent()
-        this.initGameLoop()
+        this.initGame()
     }
 
     private initCanvas(): void {
@@ -59,6 +57,7 @@ export class Game {
     private draw(): void {
         if (this.isGameOver) {
             clearInterval(this.interval)
+            this.restateGame()
         }
         this.ctx.clearRect(
             0, 
@@ -73,8 +72,25 @@ export class Game {
 
         this.paddle.draw(this.ctx)
         this.paddle.checkMovement(this.gameOptions)
-
         
+        this.score.draw(this.ctx)
+    }
+
+    private restateGame(): void {
+        const playAgainBtn: HTMLButtonElement =  document.querySelector('.play-again')
+        playAgainBtn.style.display = 'block';
+        playAgainBtn.addEventListener('click', ()=> {
+            playAgainBtn.style.display = 'none';
+            this.isGameOver = false
+            this.ctx.clearRect(
+                0, 
+                0,
+                this.gameOptions.canvasWidth, 
+                this.gameOptions.canvasHeight
+            )
+            clearInterval(this.interval)
+            this.initGame()
+        }, false)
     }
 
     private initEvent(): void {
@@ -84,5 +100,19 @@ export class Game {
 
     private initGameLoop() : void {
         this.interval = setInterval(() => this.draw(), 10)
+    }
+
+    private initGame(): void {
+        this.initCanvas()
+        this.initBall()
+        this.initPaddle()
+        this.initScore()
+        this.initEvent()
+        this.initGameLoop()
+    }
+
+
+    private initScore(): void {
+        this.score = new Score(8,20,0,0,'green')
     }
 }
