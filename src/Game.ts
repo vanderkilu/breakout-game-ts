@@ -1,6 +1,8 @@
 import {Ball} from './entities/Ball'
 import {Paddle} from './entities/Paddle'
 import {Score} from './entities/Score'
+import {Brick} from './entities/Brick'
+
 
 export interface IGameOptions {
     canvasWidth: number,
@@ -13,6 +15,7 @@ export class Game {
     public ball: Ball = null
     public paddle: Paddle = null
     public score: Score = null
+    public bricks: Brick[][] = []
     public interval: any
     private isGameOver: boolean = false
     
@@ -74,6 +77,13 @@ export class Game {
         this.paddle.checkMovement(this.gameOptions)
         
         this.score.draw(this.ctx)
+
+        for (let i = 0; i < this.bricks.length; i++) {
+            for (let j =0; j < this.bricks.length; j++) {
+                if (this.bricks[i][j])
+                    this.bricks[i][j].draw(this.ctx)
+            }
+        }
     }
 
     private restateGame(): void {
@@ -102,10 +112,30 @@ export class Game {
         this.interval = setInterval(() => this.draw(), 10)
     }
 
+    private initBricks(): void {
+        const col = 5
+        const row = 5
+        const padding = 15
+        const width = 75
+        const height = 10
+        const offsetX = this.gameOptions.canvasWidth/4,
+            offsetY = 50
+
+        for (let i = 0; i < row; i++) {
+            this.bricks[i] = []
+            for (let j =0; j < col; j++) {
+                const x = ((width + padding) * i) + offsetX
+                const y = ((height + padding)* j) + offsetY
+                this.bricks[i][j] = new Brick(x, y, width, height, 'green')
+            }
+        }
+    }
+
     private initGame(): void {
         this.initCanvas()
         this.initBall()
         this.initPaddle()
+        this.initBricks()
         this.initScore()
         this.initEvent()
         this.initGameLoop()
