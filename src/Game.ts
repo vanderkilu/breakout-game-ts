@@ -2,6 +2,7 @@ import {Ball} from './entities/Ball'
 import {Paddle} from './entities/Paddle'
 import {Score} from './entities/Score'
 import {Brick} from './entities/Brick'
+import {Live} from './entities/Live'
 
 
 export interface IGameOptions {
@@ -16,9 +17,8 @@ export class Game {
     public paddle: Paddle = null
     public score: Score = null
     public bricks: Brick[][] = []
+    public live: Live = null
     public interval: any
-    private isGameOver: boolean = false
-    
 
     constructor(public gameOptions: IGameOptions){
         this.initGame()
@@ -58,10 +58,6 @@ export class Game {
     }
 
     private draw(): void {
-        if (this.isGameOver) {
-            clearInterval(this.interval)
-            this.restateGame()
-        }
         this.ctx.clearRect(
             0, 
             0,
@@ -71,12 +67,12 @@ export class Game {
         this.ball.draw(this.ctx)
         this.ball.updatePosition()
         this.ball.checkCollision(this.gameOptions, this.paddle)
-        this.isGameOver = this.ball.isOverTheEdge()
 
         this.paddle.draw(this.ctx)
         this.paddle.checkMovement(this.gameOptions)
         
         this.score.draw(this.ctx)
+        this.live.draw(this.ctx)
 
         for (let i = 0; i < this.bricks.length; i++) {
             for (let j =0; j < this.bricks.length; j++) {
@@ -89,6 +85,27 @@ export class Game {
                 if (brick) brick.draw(this.ctx)  
             }
         }
+        if (this.ball.isOverTheEdge) {
+            this.live.lives = this.live.lives -1
+            if (this.live.lives <= 0) {
+                clearInterval(this.interval)
+                this.restateGame()
+            }
+            else {
+                
+                this.repositionEntity()
+            }
+        }
+    }
+
+    private repositionEntity() {
+        this.ball.isOverTheEdge
+        this.ball.x = this.gameOptions.canvasWidth/2
+        this.ball.y = this.gameOptions.canvasHeight/2-10
+        this.paddle.x = (this.gameOptions.canvasWidth-this.paddle.width)/2
+        this.ball.isOverTheEdge = false
+        this.ball.dx = 2
+        this.ball.dy = -2
     }
 
     private restateGame(): void {
@@ -96,7 +113,6 @@ export class Game {
         playAgainBtn.style.display = 'block';
         playAgainBtn.addEventListener('click', ()=> {
             playAgainBtn.style.display = 'none';
-            this.isGameOver = false
             this.ctx.clearRect(
                 0, 
                 0,
@@ -104,6 +120,11 @@ export class Game {
                 this.gameOptions.canvasHeight
             )
             clearInterval(this.interval)
+            this.ball= null
+            this.paddle = null
+            this.score = null
+            this.bricks = []
+            this.live = null
             this.initGame()
         }, false)
     }
@@ -114,7 +135,7 @@ export class Game {
     }
 
     private initGameLoop() : void {
-        this.interval = setInterval(() => this.draw(), 10)
+        this.interval = setInterval(() => this.draw(), 15)
     }
 
     private initBricks(): void {
@@ -142,11 +163,22 @@ export class Game {
         this.initPaddle()
         this.initBricks()
         this.initScore()
+        this.initLive()
         this.initEvent()
         this.initGameLoop()
     }
 
     private initScore(): void {
         this.score = new Score(8,20,0,0,'green')
+    }
+
+    private initLive(): void {
+        this.live = new Live(
+            this.gameOptions.canvasWidth-100,
+            20,
+            0,
+            0,
+            'green'
+        )
     }
 }

@@ -29,8 +29,11 @@ export class Ball extends Entity {
         this.x += this.dx
         this.y += this.dy
     }
-    public isOverTheEdge (): boolean {
+    get isOverTheEdge(): boolean {
         return this._isOverTheEdge
+    }
+    set isOverTheEdge(cond: boolean) {
+        this._isOverTheEdge = cond
     }
     public checkCollision(gameArea: IGameOptions, paddle: Paddle): void {
         if ((this.x + this.width > gameArea.canvasWidth) ||
