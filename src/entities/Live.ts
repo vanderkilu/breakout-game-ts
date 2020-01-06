@@ -2,7 +2,7 @@ import {Entity} from './Entity'
 
 
 export class Live extends Entity {
-    private _lives: number = 5
+    private _lives: number = 3
     constructor(
         public x: number,
         public y: number,
