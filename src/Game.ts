@@ -80,8 +80,12 @@ export class Game {
 
         for (let i = 0; i < this.bricks.length; i++) {
             for (let j =0; j < this.bricks.length; j++) {
-                if (this.bricks[i][j])
-                    this.bricks[i][j].draw(this.ctx)
+                const brick: Brick= this.bricks[i][j]
+                if (brick  && !brick.hasBroken && brick.hasCollided(this.ball))  {
+                    brick.hasBroken = true 
+                    this.score.score += 1
+                }
+                if (brick) brick.draw(this.ctx)  
             }
         }
     }

@@ -1,7 +1,8 @@
 import { Entity } from './Entity'
+import {Ball} from './Ball'
 
 export class Brick extends Entity {
-    private hasBroken: boolean = false 
+    public hasBroken: boolean = false 
     constructor(
         public x: number,
         public y: number,
@@ -20,5 +21,11 @@ export class Brick extends Entity {
             ctx.fill()
             ctx.closePath()
         }
+    }
+
+    public hasCollided(ball: Ball): Boolean {
+        return (ball.x > this.x && 
+                ball.x < this.x + this.width) &&
+                (ball.y > this.y && ball.y < this.y + this.height)
     }
 }
