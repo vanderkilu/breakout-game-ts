@@ -111,7 +111,6 @@ export class Game {
         this.initGameLoop()
     }
 
-
     private initScore(): void {
         this.score = new Score(8,20,0,0,'green')
     }
