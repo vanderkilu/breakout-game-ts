@@ -12,6 +12,7 @@ export class Game {
     public ball: Ball = null
     public paddle: Paddle = null
     public interval: any
+    private isGameOver: boolean = false
     
 
     constructor(public gameOptions: IGameOptions){
@@ -41,7 +42,7 @@ export class Game {
     }
 
     private initPaddle(): void {
-        const paddleWidth = 100
+        const paddleWidth = 120
         const paddleHeight = 10
         const paddleX = (this.gameOptions.canvasWidth-paddleWidth)/2
         const paddleY = this.gameOptions.canvasHeight - paddleHeight
@@ -56,6 +57,9 @@ export class Game {
     }
 
     private draw(): void {
+        if (this.isGameOver) {
+            clearInterval(this.interval)
+        }
         this.ctx.clearRect(
             0, 
             0,
@@ -65,9 +69,11 @@ export class Game {
         this.ball.draw(this.ctx)
         this.ball.updatePosition()
         this.ball.checkCollision(this.gameOptions, this.paddle)
+        this.isGameOver = this.ball.isOverTheEdge()
 
         this.paddle.draw(this.ctx)
         this.paddle.checkMovement(this.gameOptions)
+
         
     }
 

@@ -6,6 +6,7 @@ export class Ball extends Entity {
     public dx: number = 2
     public dy: number = -2
     public speed: number = 3
+    private _isOverTheEdge: boolean = false
 
     constructor(
         public x: number,
@@ -28,6 +29,9 @@ export class Ball extends Entity {
         this.x += this.dx
         this.y += this.dy
     }
+    public isOverTheEdge (): boolean {
+        return this._isOverTheEdge
+    }
     public checkCollision(gameArea: IGameOptions, paddle: Paddle): void {
         if ((this.x + this.width > gameArea.canvasWidth) ||
           (this.x - this.width  < 0)){
@@ -48,6 +52,9 @@ export class Ball extends Entity {
                    //calculate new position of the ball based on angle
                    this.dx = Math.sin(angle) * this.speed
                    this.dy = -1 * Math.cos(angle) *  this.speed
+            }
+            else {
+                this._isOverTheEdge = true
             }
         }
     }
