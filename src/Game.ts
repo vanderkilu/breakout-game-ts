@@ -82,6 +82,7 @@ export class Game {
             for (let j =0; j < this.bricks.length; j++) {
                 const brick: Brick= this.bricks[i][j]
                 if (brick  && !brick.hasBroken && brick.hasCollided(this.ball))  {
+                    this.ball.dy = -this.ball.dy
                     brick.hasBroken = true 
                     this.score.score += 1
                 }
