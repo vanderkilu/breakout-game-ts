@@ -39,7 +39,7 @@ export class Game {
         const ballY = this.gameOptions.canvasHeight/2 -10
         const ballRadius = 10
 
-        this.ball = new Ball(ballX, ballY, ballRadius, 0, 'green')
+        this.ball = new Ball(ballX, ballY, ballRadius, 0, '#307878')
     }
 
     private initPaddle(): void {
@@ -53,7 +53,7 @@ export class Game {
             paddleY, 
             paddleWidth, 
             paddleHeight,
-            'green'
+            '#307878'
         )
     }
 
@@ -152,7 +152,7 @@ export class Game {
             for (let j =0; j < col; j++) {
                 const x = ((width + padding) * i) + offsetX
                 const y = ((height + padding)* j) + offsetY
-                this.bricks[i][j] = new Brick(x, y, width, height, 'green')
+                this.bricks[i][j] = new Brick(x, y, width, height, '#307878')
             }
         }
     }
@@ -169,7 +169,7 @@ export class Game {
     }
 
     private initScore(): void {
-        this.score = new Score(8,20,0,0,'green')
+        this.score = new Score(8,20,0,0,'white')
     }
 
     private initLive(): void {
@@ -178,7 +178,7 @@ export class Game {
             20,
             0,
             0,
-            'green'
+            'white'
         )
     }
 }
