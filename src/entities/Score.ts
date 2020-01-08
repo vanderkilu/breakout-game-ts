@@ -14,7 +14,7 @@ export class Score extends Entity {
     }
 
     public draw(ctx: CanvasRenderingContext2D) {
-        ctx.font = "16px Arial";
+        ctx.font = "20px Arial";
         ctx.fillStyle = this.color;
         ctx.fillText(`SCORE: ${this._score}`, this.x, this.y);
     }

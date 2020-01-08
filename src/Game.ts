@@ -19,6 +19,7 @@ export class Game {
     public bricks: Brick[][] = []
     public live: Live = null
     public interval: any
+    private playAgainBtn: HTMLButtonElement = document.querySelector('.play-again')
 
     constructor(public gameOptions: IGameOptions){
         this.initGame()
@@ -80,7 +81,7 @@ export class Game {
                 if (brick  && !brick.hasBroken && brick.hasCollided(this.ball))  {
                     this.ball.dy = -this.ball.dy
                     brick.hasBroken = true 
-                    this.score.score += 1
+                    this.score.score += 10
                 }
                 if (brick) brick.draw(this.ctx)  
             }
@@ -89,12 +90,21 @@ export class Game {
             this.live.lives = this.live.lives -1
             if (this.live.lives <= 0) {
                 clearInterval(this.interval)
-                this.restateGame()
+                this.playAgainBtn.style.display = 'block'
             }
             else {
                 
                 this.repositionEntity()
             }
+        }
+        const brickNum = this.bricks[0].length * this.bricks.length 
+        if (this.score.score / 10 === brickNum) {
+            this.ctx.fillText('HIYYAAA, YOU WON',
+                this.gameOptions.canvasWidth/2-50,
+                this.gameOptions.canvasHeight/2
+            )
+            clearInterval(this.interval)
+            this.playAgainBtn.style.display = 'block'
         }
     }
 
@@ -108,30 +118,30 @@ export class Game {
         this.ball.dy = -2
     }
 
-    private restateGame(): void {
-        const playAgainBtn: HTMLButtonElement =  document.querySelector('.play-again')
-        playAgainBtn.style.display = 'block';
-        playAgainBtn.addEventListener('click', ()=> {
-            playAgainBtn.style.display = 'none';
-            this.ctx.clearRect(
-                0, 
-                0,
-                this.gameOptions.canvasWidth, 
-                this.gameOptions.canvasHeight
-            )
-            clearInterval(this.interval)
-            this.ball= null
-            this.paddle = null
-            this.score = null
-            this.bricks = []
-            this.live = null
-            this.initGame()
-        }, false)
+    private reInitialize(): void {
+        this.ctx.clearRect(
+            0, 
+            0,
+            this.gameOptions.canvasWidth, 
+            this.gameOptions.canvasHeight
+        )
+        clearInterval(this.interval)
+        this.ball= null
+        this.paddle = null
+        this.score = null
+        this.bricks = []
+        this.live = null
+        this.initGame()
     }
 
     private initEvent(): void {
         document.addEventListener('keydown', (e)=> this.paddle.beginMovement(e))
         document.addEventListener('keyup', (e)=> this.paddle.stopMovement(e))
+        this.playAgainBtn.addEventListener('click', ()=> {
+            this.playAgainBtn.style.display = 'none'
+            this.reInitialize()
+        }, false)
+
     }
 
     private initGameLoop() : void {
