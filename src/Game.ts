@@ -249,3 +249,13 @@ export class Game {
         }
     }
 }
+
+/**
+ * @todo add pause functionality
+ * toggle between automove should happen when player collect automove collectible
+ * add more collectibles like (spanning two balls, firebreakers)
+ * toggle between levels(two balls, break walls twice(ice walls before walls))
+ * add sounds
+ * add talks like sweeto when u break more breaks under a certain time.
+ * add background change for levels
+ */
