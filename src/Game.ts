@@ -145,7 +145,7 @@ export class Game {
     }
 
     private initGameLoop() : void {
-        this.interval = setInterval(() => this.draw(), 15)
+        this.interval = setInterval(() =>  this.draw(), 15)
     }
 
     private initBricks(): void {
@@ -175,7 +175,7 @@ export class Game {
         this.initScore()
         this.initLive()
         this.initEvent()
-        this.initGameLoop()
+        this.beforeGameStart()
     }
 
     private initScore(): void {
@@ -190,5 +190,36 @@ export class Game {
             0,
             'white'
         )
+    }
+
+    private beforeGameStart():void {
+        let count:number = 3
+        const timer = setInterval(()=> {
+            if (count === -1)  {
+                clearInterval(timer) 
+                this.ctx.clearRect(
+                    0,
+                    0,
+                    this.gameOptions.canvasWidth,
+                    this.gameOptions.canvasHeight
+                )
+                this.initGameLoop()
+            }
+            else {
+                this.ctx.clearRect(
+                    0,
+                    0,
+                    this.gameOptions.canvasWidth,
+                    this.gameOptions.canvasHeight
+                )
+                this.ctx.font = "40px Arial"
+                this.ctx.fillStyle = '#ffffff'
+                let countText: string = count !== 0 ? count.toString() : 'GO'
+                this.ctx.fillText(countText, 
+                this.gameOptions.canvasWidth/2-50,
+                this.gameOptions.canvasHeight/2)
+                count--
+            }
+        }, 1000)
     }
 }
