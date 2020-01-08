@@ -19,6 +19,7 @@ export class Game {
     public bricks: Brick[][] = []
     public live: Live = null
     public interval: any
+    public isOnAutoMove: boolean = false
     private playAgainBtn: HTMLButtonElement = document.querySelector('.play-again')
 
     constructor(public gameOptions: IGameOptions){
@@ -101,11 +102,12 @@ export class Game {
         if (this.score.score / 10 === brickNum) {
             this.ctx.fillText('HIYYAAA, YOU WON',
                 this.gameOptions.canvasWidth/2-50,
-                this.gameOptions.canvasHeight/2
+                this.gameOptions.canvasHeight/2-10
             )
             clearInterval(this.interval)
             this.playAgainBtn.style.display = 'block'
         }
+        if (this.isOnAutoMove) this.autoMove()
     }
 
     private repositionEntity() {
@@ -131,12 +133,21 @@ export class Game {
         this.score = null
         this.bricks = []
         this.live = null
+        this.isOnAutoMove = false
         this.initGame()
     }
 
     private initEvent(): void {
-        document.addEventListener('keydown', (e)=> this.paddle.beginMovement(e))
-        document.addEventListener('keyup', (e)=> this.paddle.stopMovement(e))
+        document.addEventListener('keydown', (e)=> {
+            if (e.key === 'Shift') this.isOnAutoMove = true
+            else {
+                this.isOnAutoMove = false
+                this.paddle.beginMovement(e) 
+            }
+        }, false)
+        document.addEventListener('keyup', (e)=> {
+            this.paddle.stopMovement(e)
+        })
         this.playAgainBtn.addEventListener('click', ()=> {
             this.playAgainBtn.style.display = 'none'
             this.reInitialize()
@@ -221,5 +232,20 @@ export class Game {
                 count--
             }
         }, 1000)
+    }
+
+
+    public autoMove() {
+        let desiredX = this.ball.x - this.paddle.x
+        let steerX = desiredX - this.paddle.dx - 20
+        steerX  = steerX * 1
+
+        this.paddle.x += steerX 
+        if (this.paddle.x + this.paddle.width > this.gameOptions.canvasWidth) {
+            this.paddle.x = this.gameOptions.canvasWidth-this.paddle.width
+        }
+        else if (this.paddle.x < 0) {
+            this.paddle.x = 0
+        }
     }
 }

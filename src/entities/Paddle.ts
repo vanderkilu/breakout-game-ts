@@ -4,6 +4,7 @@ import { IGameOptions } from '../Game';
 export class Paddle extends Entity {
     public rightPressed: boolean = false
     public leftPressed: boolean = false
+    public dx: number = 5
     constructor(
         public x: number,
         public y: number,
@@ -33,13 +34,13 @@ export class Paddle extends Entity {
 
     public checkMovement(gameArea: IGameOptions): void {
         if (this.rightPressed) {
-            this.x += 5
+            this.x += this.dx
             if (this.x + this.width > gameArea.canvasWidth){
                 this.x = gameArea.canvasWidth - this.width;
             }
         }
         else if (this.leftPressed) {
-            this.x += -5
+            this.x += -this.dx
             if (this.x < 0) {
                 this.x = 0;
             }
