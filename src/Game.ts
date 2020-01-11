@@ -3,6 +3,7 @@ import {Paddle} from './entities/Paddle'
 import {Score} from './entities/Score'
 import {Brick} from './entities/Brick'
 import {Live} from './entities/Live'
+import { Sound } from "./Sound";
 
 
 export interface IGameOptions {
@@ -18,11 +19,15 @@ export class Game {
     public score: Score = null
     public bricks: Brick[][] = []
     public live: Live = null
-    public interval: any
     public isOnAutoMove: boolean = false
+    public isGameOver: boolean = false
     private playAgainBtn: HTMLButtonElement = document.querySelector('.play-again')
+    private wallCollideSound = new Sound('../src/assets/wall-break.wav', {volume: 0.4})
+    private backgroundSound = new Sound('../src/assets/background.mp3', {volume: 0.2, loop: true})
+
 
     constructor(public gameOptions: IGameOptions){
+        // this.backgroundSound.play()
         this.initGame()
     }
 
@@ -80,6 +85,7 @@ export class Game {
             for (let j =0; j < this.bricks.length; j++) {
                 const brick: Brick= this.bricks[i][j]
                 if (brick  && !brick.hasBroken && brick.hasCollided(this.ball))  {
+                    this.wallCollideSound.play()
                     this.ball.dy = -this.ball.dy
                     brick.hasBroken = true 
                     this.score.score += 10
@@ -87,16 +93,19 @@ export class Game {
                 if (brick) brick.draw(this.ctx)  
             }
         }
-        if (this.ball.isOverTheEdge) {
+        if (this.ball.isOverTheEdge && !this.isGameOver) {
             this.live.lives = this.live.lives -1
             if (this.live.lives <= 0) {
-                clearInterval(this.interval)
-                this.playAgainBtn.style.display = 'block'
+                this.isGameOver = true  
             }
             else {
-                
+                this.shakeScreen()
                 this.repositionEntity()
             }
+        }
+        if (this.isGameOver) {
+            this.playAgainBtn.style.display = 'block'
+            return   
         }
         const brickNum = this.bricks[0].length * this.bricks.length 
         if (this.score.score / 10 === brickNum) {
@@ -104,14 +113,16 @@ export class Game {
                 this.gameOptions.canvasWidth/2-50,
                 this.gameOptions.canvasHeight/2-10
             )
-            clearInterval(this.interval)
             this.playAgainBtn.style.display = 'block'
         }
         if (this.isOnAutoMove) this.autoMove()
+
+        console.log(this.ball.dx, this.ball.dy)
+
+        requestAnimationFrame(()=> this.draw())
     }
 
     private repositionEntity() {
-        this.ball.isOverTheEdge
         this.ball.x = this.gameOptions.canvasWidth/2
         this.ball.y = this.gameOptions.canvasHeight/2-10
         this.paddle.x = (this.gameOptions.canvasWidth-this.paddle.width)/2
@@ -127,26 +138,28 @@ export class Game {
             this.gameOptions.canvasWidth, 
             this.gameOptions.canvasHeight
         )
-        clearInterval(this.interval)
         this.ball= null
         this.paddle = null
         this.score = null
         this.bricks = []
         this.live = null
         this.isOnAutoMove = false
+        this.isGameOver = false
         this.initGame()
     }
 
     private initEvent(): void {
         document.addEventListener('keydown', (e)=> {
-            if (e.key === 'Shift') this.isOnAutoMove = true
-            else {
-                this.isOnAutoMove = false
-                this.paddle.beginMovement(e) 
+            if (!this.isGameOver) {
+                if (e.key === 'Shift') this.isOnAutoMove = true
+                else {
+                    this.isOnAutoMove = false
+                    this.paddle.beginMovement(e) 
+                }
             }
         }, false)
         document.addEventListener('keyup', (e)=> {
-            this.paddle.stopMovement(e)
+            if (!this.isGameOver) this.paddle.stopMovement(e)
         })
         this.playAgainBtn.addEventListener('click', ()=> {
             this.playAgainBtn.style.display = 'none'
@@ -156,7 +169,7 @@ export class Game {
     }
 
     private initGameLoop() : void {
-        this.interval = setInterval(() =>  this.draw(), 15)
+        this.draw()
     }
 
     private initBricks(): void {
@@ -204,9 +217,9 @@ export class Game {
     }
 
     private beforeGameStart():void {
-        let count:number = 3
+        let count = 3
         const timer = setInterval(()=> {
-            if (count === -1)  {
+            if (count <= -1)  {
                 clearInterval(timer) 
                 this.ctx.clearRect(
                     0,
@@ -247,6 +260,17 @@ export class Game {
         else if (this.paddle.x < 0) {
             this.paddle.x = 0
         }
+    }
+
+    private shakeScreen():void {
+        const canvas: HTMLCanvasElement = document.getElementById(
+            this.gameOptions.canvasId
+        ) as HTMLCanvasElement
+        canvas.classList.add('screen-shake')
+        canvas.addEventListener('animationend', ()=> {
+            canvas.classList.remove('screen-shake')
+            
+        })
     }
 }
 

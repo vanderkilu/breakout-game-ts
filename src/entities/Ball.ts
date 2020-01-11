@@ -1,12 +1,14 @@
 import {Entity} from './Entity'
 import {IGameOptions} from '../Game'
 import {Paddle} from './Paddle'
+import {Sound} from '../Sound'
 
 export class Ball extends Entity {
     public dx: number = 2
     public dy: number = -2
     public speed: number = 3
     private _isOverTheEdge: boolean = false
+    private collideSound = new Sound('../src/assets/collide.wav', {volume: 0.5})
 
     constructor(
         public x: number,
@@ -55,6 +57,7 @@ export class Ball extends Entity {
                    //calculate new position of the ball based on angle
                    this.dx = Math.sin(angle) * this.speed
                    this.dy = -1 * Math.cos(angle) *  this.speed
+                   this.collideSound.play()
             }
             else {
                 this._isOverTheEdge = true
